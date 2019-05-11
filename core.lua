@@ -199,7 +199,7 @@ function plugin:UNIT_SPELLCAST_SUCCEEDED(event,unit,spell,id)
 			self.slamStart = nil;
 		-- Az: cata has no spells that are on next melee afaik?
 		elseif (spellSwingReset[spell]) then
-			StartSwing(UnitAttackSpeed("player"),meleeSwing);
+			StartSwing(UnitAttackSpeed("player"),"Mainhand");
 		end
 	end
 end
