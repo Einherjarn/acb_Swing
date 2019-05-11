@@ -66,13 +66,13 @@ local function OnUpdate(self,elapsed)
 end
 
 local function OnUpdate2(self,elapsed)
-	-- midswing attackspeed changes affect the rest of the swing..
-	local _,speed = UnitAttackSpeed("player")
-	if(speed ~= self.aspeed)then
-		self.duration = (self.duration / self.aspeed)*speed;
-		self.aspeed = speed;
-		StartSwingOffHand(duration, meleeSwing);
-	end
+	-- -- midswing attackspeed changes affect the rest of the swing..
+	-- local _,speed = UnitAttackSpeed("player")
+	-- if(speed ~= self.aspeed)then
+		-- self.duration = (self.duration / self.aspeed)*speed;
+		-- self.aspeed = speed;
+		-- StartSwingOffHand(duration, meleeSwing);
+	-- end
 	-- No update on slam suspend
 	if (self.slamStart) then
 		return;
@@ -132,26 +132,27 @@ function plugin:COMBAT_LOG_EVENT_UNFILTERED(event,time,type,sourceGUID,sourceNam
 	if (sourceName == pName) then
 		local prefix, suffix = type:match("(.-)_(.+)");
 		if (prefix == "SWING") then -- and (not self.timeLeft or self.timeLeft <= 0.1)
-			if((not self.timeLeft) or self.timeLeft <= plugin2.timeLeft) then
+			if(not self.timeLeft) then
 				StartSwing(speed,"Mainhand");
-			else
-				
+			elseif(plugin2.timeLeft)then
+				if(self.timeLeft <= plugin2.timeLeft)then
+					StartSwing(speed,"Mainhand");
+				end
 			end
 		end
 	-- Something Happens to our Player
-	-- presume only mainhand is parryhasted until i realize otherwise
-	-- elseif (destName == pName) then
-		-- local prefix, suffix = type:match("(.-)_(.+)");
-		-- local missType = ...;
-		-- -- Az: the info on wowwiki seemed obsolete, so this might not be 100% correct, I had to ignore the 20% rule as that didn't seem to be correct from tests
-		-- -- if (prefix == "SWING") and (suffix == "MISSED") and (self.duration) and (missType == "PARRY") then
-			-- -- local newDuration = (self.duration * 0.6);
--- -- --			local newTimeLeft = (self.startTime + newDuration - GetTime());
-			-- -- self.duration = newDuration;
-			-- -- self.status:SetMinMaxValues(0,self.duration);
-			-- -- self.status:SetStatusBarColor(unpack(self.cfg.colParry));
-			-- -- self.totalTimeText = (self.cfg.showTotalTime and " / "..FormatTime(self.duration,1) or nil);
-		-- -- end
+	elseif (destName == pName) then
+		local prefix, suffix = type:match("(.-)_(.+)");
+		local missType = ...;
+		-- Az: the info on wowwiki seemed obsolete, so this might not be 100% correct, I had to ignore the 20% rule as that didn't seem to be correct from tests
+		if (prefix == "SWING") and (suffix == "MISSED") and (self.duration) and (missType == "PARRY") then
+			local newDuration = (self.duration * 0.6);
+--			local newTimeLeft = (self.startTime + newDuration - GetTime());
+			self.duration = newDuration;
+			self.status:SetMinMaxValues(0,self.duration);
+			self.status:SetStatusBarColor(unpack(self.cfg.colParry));
+			self.totalTimeText = (self.cfg.showTotalTime and " / "..FormatTime(self.duration,1) or nil);
+		end
 	end
 end
 
@@ -162,23 +163,28 @@ function plugin2:COMBAT_LOG_EVENT_UNFILTERED(event,time,type,sourceGUID,sourceNa
 		if (sourceName == pName) then
 			local prefix, suffix = type:match("(.-)_(.+)");
 			if (prefix == "SWING") then
-				if(((not self.timeLeft) and plugin.timeLeft) or self.timeLeft < plugin.timeLeft) then
+				if(self.timeLeft and plugin.timeLeft) then
+					if(self.timeLeft < plugin.timeLeft) then
+						StartSwingOffHand(speed,"Offhand");
+					end
+				elseif((not self.timeLeft) and plugin.timeLeft) then
 					StartSwingOffHand(speed,"Offhand");
 				end
 			end
 		-- Something Happens to our Player
-		elseif (destName == pName) then
-			local prefix, suffix = type:match("(.-)_(.+)");
-			local missType = ...;
-			-- Az: the info on wowwiki seemed obsolete, so this might not be 100% correct, I had to ignore the 20% rule as that didn't seem to be correct from tests
-			if (prefix == "SWING") and (suffix == "MISSED") and (self.duration) and (missType == "PARRY") then
-				local newDuration = (self.duration * 0.6);
-	--			local newTimeLeft = (self.startTime + newDuration - GetTime());
-				self.duration = newDuration;
-				self.status:SetMinMaxValues(0,self.duration);
-				self.status:SetStatusBarColor(unpack(self.cfg.colParry));
-				self.totalTimeText = (self.cfg.showTotalTime and " / "..FormatTime(self.duration,1) or nil);
-			end
+		-- presume only mainhand is parryhasted until i realize otherwise
+		-- elseif (destName == pName) then
+			-- local prefix, suffix = type:match("(.-)_(.+)");
+			-- local missType = ...;
+			-- -- Az: the info on wowwiki seemed obsolete, so this might not be 100% correct, I had to ignore the 20% rule as that didn't seem to be correct from tests
+			-- if (prefix == "SWING") and (suffix == "MISSED") and (self.duration) and (missType == "PARRY") then
+				-- local newDuration = (self.duration * 0.6);
+	-- --			local newTimeLeft = (self.startTime + newDuration - GetTime());
+				-- self.duration = newDuration;
+				-- self.status:SetMinMaxValues(0,self.duration);
+				-- self.status:SetStatusBarColor(unpack(self.cfg.colParry));
+				-- self.totalTimeText = (self.cfg.showTotalTime and " / "..FormatTime(self.duration,1) or nil);
+			-- end
 		end
 	end
 end
