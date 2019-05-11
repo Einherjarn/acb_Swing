@@ -25,13 +25,13 @@ local slam = GetSpellInfo(1464);
 local autoShot = GetSpellInfo(75);
 local wandShot = GetSpellInfo(5019);
 local meleeSwing = GetLocale() == "enUS" and "Melee Swing" or GetSpellInfo(6603);
---[[local spellSwingReset = {
+local spellSwingReset = {
 	[GetSpellInfo(78)] = true,		-- Heroic Strike
 	[GetSpellInfo(845)] = true,		-- Cleave
 	[GetSpellInfo(2973)] = true,	-- Raptor Strike
 	[GetSpellInfo(6807)] = true,	-- Maul
 	[GetSpellInfo(56815)] = true,	-- Rune Strike
-};]]
+};
 
 --------------------------------------------------------------------------------------------------------
 --                                           Frame Scripts                                            --
@@ -198,8 +198,8 @@ function plugin:UNIT_SPELLCAST_SUCCEEDED(event,unit,spell,id)
 			self.startTime = (self.startTime + GetTime() - self.slamStart);
 			self.slamStart = nil;
 		-- Az: cata has no spells that are on next melee afaik?
---		elseif (spellSwingReset[spell]) then
---			StartSwing(UnitAttackSpeed("player"),meleeSwing);
+		elseif (spellSwingReset[spell]) then
+			StartSwing(UnitAttackSpeed("player"),meleeSwing);
 		end
 	end
 end
@@ -209,9 +209,7 @@ function plugin2:UNIT_SPELLCAST_SUCCEEDED(event,unit,spell,id)
 		if (spell == slam) and (self.slamStart) then
 			self.startTime = (self.startTime + GetTime() - self.slamStart);
 			self.slamStart = nil;
-		-- Az: cata has no spells that are on next melee afaik?
---		elseif (spellSwingReset[spell]) then
---			StartSwing(UnitAttackSpeed("player"),meleeSwing);
+		-- all yellow swings are mainhand even if dualwielding
 		end
 	end
 end
