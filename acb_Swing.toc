@@ -1,4 +1,4 @@
-## Interface: 40000
+## Interface: 30300
 ## Version: 10.10.12
 ## Title: ACB Swing Timer
 ## Author: Aezay (Earthen Ring EU)
