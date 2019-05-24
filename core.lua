@@ -207,7 +207,11 @@ end
 function plugin2:UNIT_SPELLCAST_SUCCEEDED(event,unit,spell,id)
 	if (unit == "player") then
 		if (spell == slam) and (self.slamStart) then
-			self.startTime = (self.startTime + GetTime() - self.slamStart);
+			if(self.startTime)then
+				self.startTime = (self.startTime + GetTime() - self.slamStart);
+			else
+				self.startTime = GetTime() - self.slamStart;
+			end
 			self.slamStart = nil;
 		-- all yellow swings are mainhand even if dualwielding
 		end
