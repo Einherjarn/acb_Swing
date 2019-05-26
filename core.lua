@@ -22,6 +22,8 @@ local pName = UnitName("player");
 
 -- Localized Names
 local slam = GetSpellInfo(1464);
+local throw = GetSpellInfo(57755);
+local throw2 = GetSpellInfo(64382);
 local autoShot = GetSpellInfo(75);
 local wandShot = GetSpellInfo(5019);
 local meleeSwing = GetLocale() == "enUS" and "Melee Swing" or GetSpellInfo(6603);
@@ -197,6 +199,10 @@ function plugin:UNIT_SPELLCAST_SUCCEEDED(event,unit,spell,id)
 		elseif (spell == slam) and (self.slamStart) then
 			self.startTime = (self.startTime + GetTime() - self.slamStart);
 			self.slamStart = nil;
+		elseif (spell == throw or spell == throw2) then
+			local speed,ohspeed = UnitAttackSpeed("player");
+			StartSwing(speed,"Mainhand");
+			StartSwingOffHand(ohspeed,"Offhand");
 		-- Az: cata has no spells that are on next melee afaik?
 		elseif (spellSwingReset[spell]) then
 			StartSwing(UnitAttackSpeed("player"),"Mainhand");
