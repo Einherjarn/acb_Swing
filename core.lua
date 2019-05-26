@@ -129,7 +129,7 @@ end
 
 -- Combat Log Parser
 function plugin:COMBAT_LOG_EVENT_UNFILTERED(event,time,type,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,...)
-	local speed = UnitAttackSpeed("player");
+	local speed,ohspeed = UnitAttackSpeed("player");
 	-- Something our Player does
 	if (sourceName == pName) then
 		local prefix, suffix = type:match("(.-)_(.+)");
@@ -140,6 +140,8 @@ function plugin:COMBAT_LOG_EVENT_UNFILTERED(event,time,type,sourceGUID,sourceNam
 				if(self.timeLeft <= plugin2.timeLeft)then
 					StartSwing(speed,"Mainhand");
 				end
+			elseif(not ohspeed)then
+				StartSwing(speed,"Mainhand");
 			end
 		end
 	-- Something Happens to our Player
