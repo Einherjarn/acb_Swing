@@ -204,7 +204,9 @@ function plugin:UNIT_SPELLCAST_SUCCEEDED(event,unit,spell,id)
 		elseif (spell == throw or spell == throw2) then
 			local speed,ohspeed = UnitAttackSpeed("player");
 			StartSwing(speed,"Mainhand");
-			StartSwingOffHand(ohspeed,"Offhand");
+			if(ohspeed)then
+				StartSwingOffHand(ohspeed,"Offhand");
+			end
 		-- Az: cata has no spells that are on next melee afaik?
 		elseif (spellSwingReset[spell]) then
 			StartSwing(UnitAttackSpeed("player"),"Mainhand");
